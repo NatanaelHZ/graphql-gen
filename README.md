@@ -1,2 +1,1 @@
-# graphql-gen
-Automated valid query generator for GraphQL
+# Automated valid query generator for GraphQL
