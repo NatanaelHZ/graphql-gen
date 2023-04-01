@@ -1,8 +1,8 @@
-# Automated valid query generator for GraphQL
+# Automated Valid Query Generator For GraphQL
 
-Project For Randomly Generating GraphQL Queries Based On The Schema.
+Project for randomly generating GraphQL queries based on the schema.
 
-###### Using technologies:
+#### Using technologies:
 
 ![](./images/graphql.png)
 
