@@ -16,6 +16,8 @@ data Type = Name String
           | TypeList [Type]
           deriving Show
 
+-- data Query = Query String
+-- 
 
 -- Examples:
 {- Examples generic -}
