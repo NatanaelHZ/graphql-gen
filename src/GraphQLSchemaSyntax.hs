@@ -16,8 +16,16 @@ data Type = Name String
           | TypeList [Type]
           deriving Show
 
--- data Query = Query String
+data Query = Query String [Arg] Type
+          deriving Show
 -- 
+
+query1 :: [Query]
+query1 = [
+           (Query "capsule" [] (Name "Capsule")), 
+           (Query "capsules" [] (Name "Capsule"))
+         ]
+
 
 -- Examples:
 {- Examples generic -}
