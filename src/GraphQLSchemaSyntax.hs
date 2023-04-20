@@ -12,27 +12,38 @@ data Field = Field String [Arg] Type
 data Arg = Arg String Type 
          deriving Show
 
-data Type = Name String 
+data PrimType = PrimInt
+              | PrimString
+              | PrimID
+              deriving Show
+
+data Type = TypePrim PrimType
+          | TypeObject String
           | TypeList [Type]
           deriving Show
 
 data Query = Query String [Arg] Type
           deriving Show
+
 -- 
 
 query1 :: [Query]
 query1 = [
-           (Query "capsule" [] (Name "Capsule")), 
-           (Query "capsules" [] (Name "Capsule"))
+           (Query "capsule" [] (TypeObject "Capsule")), 
+           (Query "capsules" [] (TypeObject "Capsule"))
          ]
+types :: [TypeDefinition]
+types = [
+  ("Capsule" , Type "Capsule" [])
+]
 
 
 -- Examples:
 {- Examples generic -}
 schema1 = Type "Query" 
             [
-                (Field "artist" [Arg "id" (Name "ID")] (Name "Artist")),
-                (Field "movie" [Arg "id" (Name "ID")] (Name "Movie"))
+                (Field "artist" [Arg "id" (TypePrim PrimID)] (TypeObject "Artist")),
+                (Field "movie" [Arg "id" (TypePrim PrimID)] (TypeObject "Movie"))
             ]
 
 {- Examples Space-X API -}
@@ -40,18 +51,18 @@ schema1 = Type "Query"
 spacexSchema = Type "Query"
                 [
                     -- Equivalent: capsule(id: ID!): Capsule
-                    --(Field "capsule" [Arg "id" (Name "ID")]  (Name "Capsule")),
+                    --(Field "capsule" [Arg "id" (TypeObject "ID")]  (TypeObject "Capsule")),
 
                     -- capsules(find: CapsulesFind, limit: Int, offset: Int, order: String, sort: String): [Capsule]
                     (Field "capsules" [
-                                Arg "find" (Name "CapsulesFind"),
-                                Arg "limit" (Name "Int"),
-                                Arg "offset" (Name "Int"),
-                                Arg "order" (Name "String"),
-                                Arg "sort" (Name "String")
+                                Arg "find" (TypeObject "CapsulesFind"),
+                                Arg "limit" (TypePrim PrimInt),
+                                Arg "offset" (TypePrim PrimInt),
+                                Arg "order" (TypePrim PrimString),
+                                Arg "sort" (TypePrim PrimString)
                             ]
                             -- Return
-                            (TypeList [(Name "Capsule")])),
+                            (TypeList [(TypeObject "Capsule")])),
                     -- company: Info
-                    (Field "company" [] (Name "Info"))
+                    (Field "company" [] (TypeObject "Info"))
                 ]

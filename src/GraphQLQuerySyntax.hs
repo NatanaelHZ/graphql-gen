@@ -16,9 +16,13 @@ data Value = ScalarValue Scalar
 data Query = Query (Maybe Name) [Selection]
            deriving Show
 
-data Selection = SingleField Name [(Name, Value)]
+data Selection = SingleField Name -- [(Name, Value)]
                | NestedField Name [(Name, Value)] [Selection]
-               | InlineFragment Name [Selection]
+              -- | InlineFragment Name [Selection]
                deriving Show
 
-query1 = Query (Just "ArtistQuery") [SingleField "artist" [("id", ScalarValue (IntValue 1000))]]
+query1 = Query (Just "ArtistQuery") [
+  --NestedField "artist" [("id", ScalarValue (IntValue 1000))] [SingleField "id", SingleField "name" ]
+  NestedField "artist" [] [SingleField "id", SingleField "name" ]
+
+  ]
