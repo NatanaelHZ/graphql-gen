@@ -1,10 +1,41 @@
 module GraphQLQueryGenerator where
 
 import Test.QuickCheck
-import GraphQLSchemaSyntax
+import qualified GraphQLSchemaSyntax as S
+import qualified GraphQLQuerySyntax as Q
 
-generateQuery :: [Query] -> Gen Query
-generateQuery queries = oneof (map return queries)
+selectSchemaQuery :: [S.Query] -> Gen S.Query
+selectSchemaQuery queries = elements queries
 
-example :: IO Query
-example = generate (generateQuery query1)
+getSingleField :: S.Field -> Q.Selection 
+getSingleField (S.Field n _ _) = Q.SingleField n
+
+generateQuery :: S.Query -> Gen Q.Query -- Name arguments type
+generateQuery (S.Query n args (S.TypeObject on)) = 
+  let obj = lookup on S.types
+    in case obj of 
+         Just (S.Type _ fl) -> 
+            do fields <- listOf1 (elements fl) 
+               return (Q.Query Nothing [Q.NestedField n [] (map getSingleField fields)])
+         Nothing -> error "Invalid object name"
+
+generateQuery (S.Query n args (S.TypeList t)) = undefined
+generateQuery (S.Query n args (S.TypePrim _)) = error "Invalid return type"
+
+selectSchemaObjectFields :: [S.Field] -> Gen [S.Field]
+selectSchemaObjectFields fields = sublistOf fields 
+
+example :: IO S.Query
+example = generate (selectSchemaQuery S.query1)
+
+
+{-
+  1 - Escolher query: OK
+  2 - Obter tipo retorno: OK
+  3 - Selecionar os campos: 
+  4 - Juntar tudo na query
+
+  - Seleção dos campos sem retornar vazio
+  - Ver TypeList geração
+  - Estudar lista dentro de lista
+-}

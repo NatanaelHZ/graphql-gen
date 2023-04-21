@@ -30,12 +30,19 @@ data Query = Query String [Arg] Type
 query1 :: [Query]
 query1 = [
            (Query "capsule" [] (TypeObject "Capsule")), 
-           (Query "capsules" [] (TypeObject "Capsule"))
+           (Query "capsules" [] (TypeList (TypeObject "Capsule")))
          ]
-types :: [TypeDefinition]
+
+types :: [(String, TypeDefinition)]
 types = [
-  ("Capsule" , Type "Capsule" [])
-]
+          ("Capsule" , Type "Capsule" [
+                                        Field "id" [] (TypePrim PrimID), 
+                                        Field "landings" [] (TypePrim PrimInt),
+                                        Field "reuse_count" [] (TypePrim PrimInt),
+                                        Field "status" [] (TypePrim PrimString)
+                                      ]
+          )
+        ]
 
 
 -- Examples:
