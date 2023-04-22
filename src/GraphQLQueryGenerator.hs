@@ -22,9 +22,10 @@ generateQuery (S.Query n args (S.TypeObject on)) =
             do fields <- nub <$> listOf1 (elements fl)
                return (Q.Query Nothing [Q.NestedField n [] (map getSingleField fields)])
          Nothing -> error "Invalid object name"
-
 generateQuery (S.Query n args (S.TypeList t)) = undefined
-generateQuery (S.Query n args (S.TypeScalar _)) = error "Invalid return type"
+generateQuery (S.Query n args (S.TypeScalar (S.NewScalar sn))) = 
+  return (Q.Query Nothing [Q.NestedField n [] [Q.SingleField sn]])
+-- generateQuery (S.Query n args (S.TypeScalar _)) = error "Invalid return type"
 
 selectSchemaObjectFields :: [S.Field] -> Gen [S.Field]
 selectSchemaObjectFields fields = sublistOf fields 

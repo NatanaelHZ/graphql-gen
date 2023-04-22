@@ -18,7 +18,7 @@ data DefaultType = PrimInt
                  | PrimString
                  | PrimBoolean
                  | PrimID
-                 | String -- Custom scalar type
+                 | NewScalar String -- Custom scalar type
                  deriving Show
 
 data Type = TypeScalar DefaultType
@@ -37,7 +37,8 @@ queries = [
            (Query "capsule" [] (TypeObject "Capsule")), 
            (Query "capsules" [] (TypeList [(TypeObject "Capsule")])),
            (Query "company" [] (TypeObject "Info")),
-           (Query "dragons" [] (TypeList [(TypeObject "Capsule")]))
+           (Query "dragons" [] (TypeList [(TypeObject "Capsule")])),
+           (Query "getNumber" [] (TypeScalar (NewScalar "Int"))) -- getNumber: Int
          ]
 
 types :: [(String, TypeDefinition)]
