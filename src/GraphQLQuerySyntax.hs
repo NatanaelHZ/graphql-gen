@@ -54,9 +54,10 @@ instance Show Selection where
 instance Show Query where 
   show = exportQuery
 
-{- Example query:
-query1 = Query (Just "ArtistQuery") [
-  --NestedField "artist" [("id", ScalarValue (IntValue 1000))] [SingleField "id", SingleField "name" ]
-  NestedField "artist" [] [SingleField "id", SingleField "name" ]
-]
+{- 
+  Example query:
+  query1 = Query (Just "ArtistQuery") [
+    --NestedField "artist" [("id", ScalarValue (IntValue 1000))] [SingleField "id", SingleField "name" ]
+    NestedField "artist" [] [SingleField "id", SingleField "name" ]
+  ]
 -}

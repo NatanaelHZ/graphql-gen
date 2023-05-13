@@ -21,7 +21,7 @@ data DefaultType = PrimInt
                  | NewScalar String -- Custom scalar type
                  deriving (Show, Eq)
 
-data Type = TypeScalar DefaultType -- Só ter o nome
+data Type = TypeScalar DefaultType
           | TypeObject String
           | TypeEnum String [String]
           | TypeList [Type]
@@ -30,14 +30,16 @@ data Type = TypeScalar DefaultType -- Só ter o nome
 data Query = Query String [Arg] Type
           deriving (Show, Eq)
 
--- Schema
-
+-- Schema API
 queries :: [Query]
 queries = [
-           (Query "capsule" [] (TypeObject "Capsule")), 
+           -- (Query "capsule" [] (TypeObject "Capsule")), 
            (Query "capsules" [] (TypeList [(TypeObject "Capsule")])),
            (Query "company" [] (TypeObject "Info")),
-           (Query "dragons" [] (TypeList [(TypeObject "Dragon")]))
+           (Query "dragons" [] (TypeList [(TypeObject "Dragon")])),
+           (Query "rockets" [] (TypeList [(TypeObject "Rocket")])),
+           (Query "roadster" [] (TypeObject "Roadster")),
+           (Query "histories" [] (TypeObject "History"))
            -- (Query "capsuleAndDragons" [] (TypeList [(TypeObject "Capsule"), (TypeObject "Capsule")]))
          ]
 
@@ -65,8 +67,54 @@ types = [
                                     Field "type" [] (TypeScalar PrimString),
                                     Field "sidewall_angle_deg" [] (TypeScalar PrimFloat)
                                    ]
+          ),
+          ("Rocket", Type "Rocket" [
+                                    Field "active" [] (TypeScalar PrimBoolean),
+                                    Field "boosters" [] (TypeScalar PrimInt),
+                                    Field "company" [] (TypeScalar PrimString),
+                                    Field "description" [] (TypeScalar PrimString),
+                                    Field "stages" [] (TypeScalar PrimInt),
+                                    Field "name" [] (TypeScalar PrimString),
+                                    Field "country" [] (TypeScalar PrimString),
+                                    Field "type" [] (TypeScalar PrimString)
+                                   ]
+          ),
+          ("Roadster", Type "Roadster" [
+                                  Field "details" [] (TypeScalar PrimString),
+                                  Field "earth_distance_km" [] (TypeScalar PrimFloat),
+                                  Field "speed_kph" [] (TypeScalar PrimFloat),
+                                  Field "wikipedia" [] (TypeScalar PrimString)
+                               ]
+          ),
+          ("History", Type "History" [
+                                  Field "details" [] (TypeScalar PrimString),
+                                  Field "title" [] (TypeScalar PrimString),
+                                  Field "id" [] (TypeScalar PrimID),
+                                  Field "links" [] (TypeObject "Link")
+                               ]
+          ),
+          ("Link", Type "Link" [
+                                  Field "article" [] (TypeScalar PrimString),
+                                  Field "reddit" [] (TypeScalar PrimString),
+                                  Field "wikipedia" [] (TypeScalar PrimString)
+                               ]
           )
         ]
+
+-- End Schema API
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- Examples:
