@@ -5,41 +5,47 @@ import Data.List
 import Debug.Trace (trace)
 import qualified GraphQLSchemaSyntax as S
 import qualified GraphQLQuerySyntax as Q
-
+{-
 instance Eq S.Field where
   (S.Field s1 _ _) == (S.Field s2 _ _) = s1 == s2
-
+-}
 selectSchemaQuery :: [S.Query] -> Gen S.Query
 selectSchemaQuery queries = elements queries
 
 getTypeName :: S.Type -> String
 getTypeName (S.TypeObject on) = on
 getTypeName (S.TypeList t) = getTypeName (head t)
-
-getSingleField :: S.Field -> Q.Selection 
+{--
+getSingleField :: S.Field -> Q.Selection
+getSingleField (S.Field n _ (S.TypeObject to)) = genQuery n (S.TypeObject to)
 getSingleField (S.Field n _ _) = Q.SingleField n
+--}
+genField :: S.Field -> Gen Q.Selection 
+genField (S.Field n _ (S.TypeObject to)) = genQuery n (S.TypeObject to)
+genField (S.Field n _ _) = return (Q.SingleField n) 
 
-getQuery :: String -> S.Type -> Gen Q.Selection
-getQuery n (S.TypeObject on) = 
+genQuery :: String -> S.Type -> Gen Q.Selection
+genQuery n (S.TypeObject on) = 
   let obj = lookup on S.types
     in case obj of 
          Just (S.Type _ fl) -> 
             do fields <- nub <$> listOf1 (elements fl)
-               return (Q.NestedField n [] (map getSingleField fields))
+               selections <- mapM genField fields
+               return (Q.NestedField n [] selections)
          Nothing -> error "Invalid object name"
 
 generateQuery :: S.Query -> Gen Q.Query -- Name arguments type
 generateQuery (S.Query n args (S.TypeObject on)) = do
-  sel <- getQuery n (S.TypeObject on)
+  sel <- genQuery n (S.TypeObject on)
   return (Q.Query Nothing [sel])
 
 generateQuery (S.Query n args (S.TypeList t)) = do
   if length t == 1 
     then do
-      selections <- mapM (getQuery n) t
+      selections <- mapM (genQuery n) t
       return (Q.Query Nothing selections)
   else do
-      selection <- Q.NestedField n [] <$> mapM (\t -> getQuery (getTypeName t) t) t
+      selection <- Q.NestedField n [] <$> mapM (\t -> genQuery (getTypeName t) t) t
       return (Q.Query Nothing [selection])
 -- generateQuery (S.Query n args (S.TypeList t)) = undefined
 
@@ -54,8 +60,11 @@ generateQuery (S.Query n args (S.TypeScalar (S.NewScalar sn))) =
 selectSchemaObjectFields :: [S.Field] -> Gen [S.Field]
 selectSchemaObjectFields fields = sublistOf fields 
 
-example :: IO S.Query
-example = generate (selectSchemaQuery S.queries)
+exportQueryGraphQL :: IO Q.Query
+exportQueryGraphQL = do
+  schemaQuery <- generate (selectSchemaQuery S.queries)
+  let generatedQuery = generateQuery schemaQuery
+  generate generatedQuery
 
 
 {-

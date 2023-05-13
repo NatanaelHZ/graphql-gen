@@ -5,13 +5,13 @@ data Schema = Schema String TypeDefinition
 
 data TypeDefinition = Scalar String 
                     | Type String [Field]
-                    deriving Show 
+                    deriving (Show, Eq) 
 
 data Field = Field String [Arg] Type 
-           deriving Show 
+           deriving (Show, Eq) 
 
 data Arg = Arg String Type 
-         deriving Show
+         deriving (Show, Eq)
 
 data DefaultType = PrimInt
                  | PrimFloat
@@ -19,16 +19,16 @@ data DefaultType = PrimInt
                  | PrimBoolean
                  | PrimID
                  | NewScalar String -- Custom scalar type
-                 deriving Show
+                 deriving (Show, Eq)
 
 data Type = TypeScalar DefaultType -- Só ter o nome
           | TypeObject String
           | TypeEnum String [String]
           | TypeList [Type]
-          deriving Show
+          deriving (Show, Eq)
 
 data Query = Query String [Arg] Type
-          deriving Show
+          deriving (Show, Eq)
 
 -- Schema
 
@@ -37,9 +37,8 @@ queries = [
            (Query "capsule" [] (TypeObject "Capsule")), 
            (Query "capsules" [] (TypeList [(TypeObject "Capsule")])),
            (Query "company" [] (TypeObject "Info")),
-           (Query "dragons" [] (TypeList [(TypeObject "Capsule")])),
-           (Query "capsuleAndDragons" [] (TypeList [(TypeObject "Capsule"), (TypeObject "Capsule")])),
-           (Query "getNumber" [] (TypeScalar PrimInt)) -- getNumber: Int
+           (Query "dragons" [] (TypeList [(TypeObject "Dragon")]))
+           -- (Query "capsuleAndDragons" [] (TypeList [(TypeObject "Capsule"), (TypeObject "Capsule")]))
          ]
 
 types :: [(String, TypeDefinition)]
@@ -48,7 +47,8 @@ types = [
                                         Field "id" [] (TypeScalar PrimID), 
                                         Field "landings" [] (TypeScalar PrimInt),
                                         Field "reuse_count" [] (TypeScalar PrimInt),
-                                        Field "status" [] (TypeScalar PrimString)
+                                        Field "status" [] (TypeScalar PrimString),
+                                        Field "dragon" [] (TypeObject "Dragon")
                                       ]
           ),
           ("Info", Type "Info" [
