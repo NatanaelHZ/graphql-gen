@@ -1,17 +1,19 @@
 module GraphQLSchemaSyntax where
 
+import Data.List
+
 -- Abstract syntax tree
 data Schema = Schema String TypeDefinition
 
 data TypeDefinition = Scalar String 
                     | Type String [Field]
-                    deriving (Show, Eq) 
+                    deriving ({-Show,-} Eq) 
 
 data Field = Field String [Arg] Type 
-           deriving (Show, Eq) 
+           deriving ({-Show,-} Eq) 
 
 data Arg = Arg String Type 
-         deriving (Show, Eq)
+         deriving ({-Show,-} Eq)
 
 data DefaultType = PrimInt
                  | PrimFloat
@@ -19,18 +21,64 @@ data DefaultType = PrimInt
                  | PrimBoolean
                  | PrimID
                  | NewScalar String -- Custom scalar type
-                 deriving (Show, Eq)
+                 deriving ({-Show,-} Eq)
 
 data Type = TypeScalar DefaultType
           | TypeObject String
           | TypeEnum String [String]
           | TypeList [Type]
-          deriving (Show, Eq)
+          deriving ({-Show,-} Eq)
 
 data Query = Query String [Arg] Type
-          deriving (Show, Eq)
+          deriving ({-Show,-} Eq)
 
--- Schema API
+instance Show Schema where 
+  show = exportSchema
+
+instance Show TypeDefinition where 
+  show = exportTypeDefinition
+
+instance Show Field where 
+  show = exportField
+
+instance Show DefaultType where 
+  show = exportDefaultType
+
+instance Show Type where 
+  show = exportType
+
+instance Show Query where 
+  show = exportQuery
+
+exportSchema :: Schema -> String
+exportSchema (Schema s td) = s ++ "{" ++ exportTypeDefinition td ++ "}"
+
+exportTypeDefinition :: TypeDefinition -> String
+exportTypeDefinition (Scalar s) = s
+exportTypeDefinition (Type s fl) = "Type " ++ s ++ "\n{\n" ++ intercalate "\n " (map exportField fl) ++ "\n}\n"
+
+exportField :: Field -> String
+exportField (Field s _ t) = s ++ ":" ++ exportType t
+
+exportDefaultType :: DefaultType -> String
+exportDefaultType (PrimInt) = "Int"
+exportDefaultType (PrimFloat) = "Float"
+exportDefaultType (PrimString) = "String"
+exportDefaultType (PrimBoolean) = "Boolean"
+exportDefaultType (PrimID) = "ID"
+exportDefaultType (NewScalar s) = s
+
+exportType :: Type -> String
+exportType (TypeScalar dt) = exportDefaultType dt
+exportType (TypeObject s) = s
+exportType (TypeEnum s sl) = s -- Falta lista
+exportType (TypeList tl) = "[" ++ intercalate "\n" (map exportType tl) ++ "]"
+
+exportQuery :: Query -> String
+exportQuery (Query s _ t) = s ++ ":" ++ exportType t
+
+
+-- Schema Test API GraphQL
 queries :: [Query]
 queries = [
            -- (Query "capsule" [] (TypeObject "Capsule")), 

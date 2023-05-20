@@ -23,6 +23,18 @@ data Selection = SingleField Name -- [(Name, Value)]
                -- | InlineFragment Name [Selection]
                -- deriving Show
 
+instance Show Scalar where 
+  show = exportScalar
+
+instance Show Value where 
+  show = exportValue
+
+instance Show Selection where 
+  show = exportSelection 
+
+instance Show Query where 
+  show = exportQuery
+  
 exportScalar :: Scalar -> String
 exportScalar (IntValue x) = show x
 exportScalar (FloatValue x) = show x
@@ -41,18 +53,6 @@ exportQuery (Query Nothing l) = "\n{\n" ++ intercalate ",\n " (map exportSelecti
 exportSelection :: Selection -> String
 exportSelection (SingleField n) = "  " ++ n
 exportSelection (NestedField n lnv sl) = n ++ " {\n" ++ intercalate ",\n" (map exportSelection sl) ++ "\n} "
-
-instance Show Scalar where 
-  show = exportScalar
-
-instance Show Value where 
-  show = exportValue
-
-instance Show Selection where 
-  show = exportSelection 
-
-instance Show Query where 
-  show = exportQuery
 
 {- 
   Example query:
