@@ -1,8 +1,9 @@
 module GraphQLQueryGenerator where
 
-import Test.QuickCheck
 import Data.List
 import Debug.Trace (trace)
+import Test.QuickCheck
+
 import qualified GraphQLSchemaSyntax as S
 import qualified GraphQLQuerySyntax as Q
 

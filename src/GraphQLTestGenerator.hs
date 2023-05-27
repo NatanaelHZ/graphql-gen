@@ -1,2 +1,0 @@
--- https://www.itb.ec.europa.eu/graphql/api/docs/#/graphql/validate
--- https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/graphql-validation-service/eif-perspective
