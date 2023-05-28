@@ -1,9 +1,6 @@
 -- https://www.itb.ec.europa.eu/graphql/api/docs/#/graphql/validate
 -- https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/graphql-validation-service/eif-perspective
 
--- https://www.itb.ec.europa.eu/graphql/api/docs/#/graphql/validate
--- https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/graphql-validation-service/eif-perspective
-
 {-# LANGUAGE OverloadedStrings #-}
 
 module GraphQLQueryTest where
@@ -14,6 +11,10 @@ import Data.Aeson (object, (.=), Value)
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import Network.HTTP.Conduit
 import Network.HTTP.Types.Header (hContentType)
+import Test.QuickCheck
+import Test.QuickCheck.Monadic (assert, monadicIO, run)
+import Test.QuickCheck.Test (isSuccess, numTests, numShrinks, output)
+import Text.Printf (printf)
 
 import GraphQLQueryGenerator as G
 
@@ -44,6 +45,29 @@ makeHttpRequest query = do
       let body = responseBody resBody
       return $ Just body
 
+prop_randomQueryIsValid :: Property
+prop_randomQueryIsValid = monadicIO $ do
+  query <- run G.exportRandomQuery
+  result <- run $ makeHttpRequest (show query)
+  assert $ result == Just "[]"
+
+main :: IO ()
+main = do
+  result <- quickCheckResult prop_randomQueryIsValid
+  case result of
+    Success { numTests = n } ->
+      putStrLn $ "All " ++ show n ++ " tests passed."
+    Failure { numTests = n, numShrinks = s, output = out } -> do
+      putStrLn $ "Failed after " ++ show n ++ " tests with " ++ show s ++ " shrinks."
+      putStrLn out
+
+
+{-
+main :: IO ()
+main = quickCheck prop_randomQueryIsValid
+-}
+
+{-
 main :: IO ()
 main = do
   randomQuery <- G.exportRandomQuery
@@ -56,6 +80,6 @@ main = do
       putStrLn $ "Response body: " ++ show body
     Nothing -> do
       putStrLn "Failed to make the HTTP request."
-
+-}
 
 
