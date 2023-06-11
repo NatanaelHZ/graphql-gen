@@ -17,22 +17,23 @@ import Test.QuickCheck.Test (isSuccess, numTests, numShrinks, output)
 import Text.Printf (printf)
 
 import GraphQLQueryGenerator as G
+import TestConfig as Config
 
-paramsBodyRequest :: String -> Value
-paramsBodyRequest query = object
-  [ "schema" .= ("type Capsule { id: ID, landings: Int, reuse_count: Int, status: String, dragon: Dragon } type Info { ceo: String, coo: String, cto: String, cto_propulsion: String } type Dragon { active: Boolean, id: ID, name: String, type: String, sidewall_angle_deg: Float } type Rocket { active: Boolean, boosters: Int, company: String, description: String, stages: Int, name: String, country: String, type: String } type Roadster { details: String, earth_distance_km: Float, speed_kph: Float, wikipedia: String } type History { details: String, title: String, id: ID, links: Link } type Link { article: String, reddit: String, wikipedia: String } type Query { capsules: [Capsule], company: Info, dragons: [Dragon], rockets: [Rocket], roadster: Roadster, histories: History }" :: String)
+paramsBodyRequest :: String -> String -> Value
+paramsBodyRequest query schema = object
+  [ "schema" .= schema
   , "schemaEmbeddingMethod" .= ("STRING" :: String)
   , "query" .= query
   , "queryEmbeddingMethod" .= ("STRING" :: String)
   ]
 
-makeHttpRequest :: String -> IO (Maybe LBS.ByteString)
-makeHttpRequest query = do
-  let url = "https://www.itb.ec.europa.eu/graphql/api/validate"
+makeHttpRequest :: String -> String -> IO (Maybe LBS.ByteString)
+makeHttpRequest query schema = do
+  let url = Config.getUrlApiGraphqlValidate
   initRequest <- parseRequest url
   let request = initRequest
         { method = "POST"
-        , requestBody = RequestBodyLBS (Aeson.encode $ paramsBodyRequest query)
+        , requestBody = RequestBodyLBS (Aeson.encode $ paramsBodyRequest query schema)
         , requestHeaders = [(hContentType, "application/json")]
         }
   manager <- newManager tlsManagerSettings
@@ -48,18 +49,18 @@ makeHttpRequest query = do
 prop_randomQueryIsValid :: Property
 prop_randomQueryIsValid = monadicIO $ do
   query <- run G.exportRandomQuery
-  result <- run $ makeHttpRequest (show query)
+  schema <- run $ Config.getGraphQLSchema Config.getFilePathSchemaGraphQL
+  result <- run $ makeHttpRequest (show query) schema
   assert $ result == Just "[]"
 
 main :: IO ()
 main = do
-  result <- quickCheckResult prop_randomQueryIsValid
-  case result of
-    Success { numTests = n } ->
-      putStrLn $ "All " ++ show n ++ " tests passed."
-    Failure { numTests = n, numShrinks = s, output = out } -> do
-      putStrLn $ "Failed after " ++ show n ++ " tests with " ++ show s ++ " shrinks."
-      putStrLn out
+  result <- quickCheckWithResult stdArgs { chatty = False } prop_randomQueryIsValid
+  putStrLn $ "Result: " ++ show (isSuccess result)
+  putStrLn $ output result
+
+
+
 
 
 {-

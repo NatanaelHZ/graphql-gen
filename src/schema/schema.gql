@@ -1,0 +1,63 @@
+type Capsule
+{
+  id:ID
+  landings:Int
+  reuse_count:Int
+  status:String
+  dragon:Dragon
+}
+type Info
+{
+  ceo:String
+  coo:String
+  cto:String
+  cto_propulsion:String
+}
+type Dragon
+{
+  active:Boolean
+  id:ID
+  name:String
+  type:String
+  sidewall_angle_deg:Float
+}
+type Rocket
+{
+  active:Boolean
+  boosters:Int
+  company:String
+  description:String
+  stages:Int
+  name:String
+  country:String
+  type:String
+}
+type Roadster
+{
+  details:String
+  earth_distance_km:Float
+  speed_kph:Float
+  wikipedia:String
+}
+type History
+{
+  details:String
+  title:String
+  id:ID
+  links:Link
+}
+type Link
+{
+  article:String
+  reddit:String
+  wikipedia:String
+}
+type Query 
+{
+  capsules:[Capsule]
+  company:Info
+  dragons:[Dragon]
+  rockets:[Rocket]
+  roadster:Roadster
+  histories:History
+}
