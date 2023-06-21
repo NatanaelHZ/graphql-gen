@@ -1,6 +1,3 @@
--- https://www.itb.ec.europa.eu/graphql/api/docs/#/graphql/validate
--- https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/graphql-validation-service/eif-perspective
-
 {-# LANGUAGE OverloadedStrings #-}
 
 module GraphQLQueryTest where
@@ -58,29 +55,3 @@ main = do
   result <- quickCheckWithResult stdArgs { chatty = False } prop_randomQueryIsValid
   putStrLn $ "Result: " ++ show (isSuccess result)
   putStrLn $ output result
-
-
-
-
-
-{-
-main :: IO ()
-main = quickCheck prop_randomQueryIsValid
--}
-
-{-
-main :: IO ()
-main = do
-  randomQuery <- G.exportRandomQuery
-  let query = show randomQuery
-  print query
-  response <- makeHttpRequest query
-  case response of
-    Just responseBody -> do
-      let body = responseBody
-      putStrLn $ "Response body: " ++ show body
-    Nothing -> do
-      putStrLn "Failed to make the HTTP request."
--}
-
-
