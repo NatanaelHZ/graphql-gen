@@ -8,7 +8,7 @@ data Scalar = IntValue Integer
             | FloatValue Double 
             | StringValue String 
             | BooleanValue Bool 
-            | IDValue Name 
+            | IDValue String 
             -- deriving Show
 
 data Value = ScalarValue Scalar
@@ -39,6 +39,7 @@ exportScalar :: Scalar -> String
 exportScalar (IntValue x) = show x
 exportScalar (FloatValue x) = show x
 exportScalar (StringValue x) = x 
+exportScalar (IDValue x) = x 
 exportScalar (BooleanValue True) = "true"
 exportScalar (BooleanValue False) = "false"
 

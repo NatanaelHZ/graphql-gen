@@ -81,14 +81,16 @@ exportQuery (Query s _ t) = s ++ ":" ++ exportType t
 -- Schema Test API GraphQL
 queries :: [Query]
 queries = [
-           -- (Query "capsule" [] (TypeObject "Capsule")), 
-           (Query "capsules" [] (TypeList [(TypeObject "Capsule")])),
-           (Query "company" [] (TypeObject "Info")),
-           (Query "dragons" [] (TypeList [(TypeObject "Dragon")])),
-           (Query "rockets" [] (TypeList [(TypeObject "Rocket")])),
-           (Query "roadster" [] (TypeObject "Roadster")),
-           (Query "histories" [] (TypeObject "History"))
-           -- (Query "capsuleAndDragons" [] (TypeList [(TypeObject "Capsule"), (TypeObject "Capsule")]))
+            (Query "capsule" [Arg "id" True (TypeScalar PrimID)] (TypeObject "Capsule")),
+            (Query "capsules" [] (TypeList [(TypeObject "Capsule")])),
+            (Query "company" [] (TypeObject "Info")),
+            (Query "dragon" [Arg "id" True (TypeScalar PrimID)] (TypeList [(TypeObject "Dragon")])),
+            (Query "dragons" [] (TypeList [(TypeObject "Dragon")])),
+            (Query "rocket" [Arg "id" True (TypeScalar PrimID)] (TypeList [(TypeObject "Rocket")])),
+            (Query "rockets" [] (TypeList [(TypeObject "Rocket")])),
+            (Query "roadster" [] (TypeObject "Roadster")),
+            (Query "histories" [] (TypeObject "History"))
+            -- (Query "capsuleAndDragons" [] (TypeList [(TypeObject "Capsule"), (TypeObject "Capsule")]))
          ]
 
 types :: [(String, TypeDefinition)]

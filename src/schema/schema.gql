@@ -54,9 +54,12 @@ type Link
 }
 type Query 
 {
+  capsule(id: ID!): Capsule
   capsules:[Capsule]
   company:Info
+  dragon(id: ID!): Dragon
   dragons:[Dragon]
+  rocket(id: ID!): Rocket
   rockets:[Rocket]
   roadster:Roadster
   histories:History
