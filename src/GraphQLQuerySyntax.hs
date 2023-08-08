@@ -52,7 +52,10 @@ exportQuery (Query Nothing l) = "\n{\n" ++ intercalate ",\n " (map exportSelecti
 
 exportSelection :: Selection -> String
 exportSelection (SingleField n) = "  " ++ n
-exportSelection (NestedField n lnv sl) = n ++ " {\n" ++ intercalate ",\n" (map exportSelection sl) ++ "\n} "
+exportSelection (NestedField n [] sl) = n ++ " {\n" ++ intercalate ",\n" (map exportSelection sl) ++ "\n} "
+exportSelection (NestedField n lnv sl) = n ++ 
+  " (" ++ intercalate "," (map (\(n, v) -> n ++ ": " ++ "\"" ++ exportValue v ++ "\"") lnv) ++ ")"  ++
+  " {\n" ++ intercalate ",\n" (map exportSelection sl) ++ "\n} "
 
 {- 
   Example query:
