@@ -12,7 +12,7 @@ data TypeDefinition = Scalar String
 data Field = Field String [Arg] Type 
            deriving ({-Show,-} Eq) 
 
-data Arg = Arg String Type 
+data Arg = Arg String Bool Type 
          deriving ({-Show,-} Eq)
 
 data DefaultType = PrimInt
@@ -169,8 +169,8 @@ types = [
 {- Examples generic -}
 schema1 = Type "Query" 
             [
-                (Field "artist" [Arg "id" (TypeScalar PrimID)] (TypeObject "Artist")),
-                (Field "movie" [Arg "id" (TypeScalar PrimID)] (TypeObject "Movie"))
+                (Field "artist" [Arg "id" False (TypeScalar PrimID)] (TypeObject "Artist")),
+                (Field "movie" [Arg "id" False (TypeScalar PrimID)] (TypeObject "Movie"))
             ]
 
 {- Examples Space-X API -}
@@ -182,11 +182,11 @@ spacexSchema = Type "Query"
 
                     -- capsules(find: CapsulesFind, limit: Int, offset: Int, order: String, sort: String): [Capsule]
                     (Field "capsules" [
-                                Arg "find" (TypeObject "CapsulesFind"),
-                                Arg "limit" (TypeScalar PrimInt),
-                                Arg "offset" (TypeScalar PrimInt),
-                                Arg "order" (TypeScalar PrimString),
-                                Arg "sort" (TypeScalar PrimString)
+                                Arg "find" False (TypeObject "CapsulesFind"),
+                                Arg "limit" False (TypeScalar PrimInt),
+                                Arg "offset" False (TypeScalar PrimInt),
+                                Arg "order" False (TypeScalar PrimString),
+                                Arg "sort" False (TypeScalar PrimString)
                             ]
                             -- Return
                             (TypeList [(TypeObject "Capsule")])),
