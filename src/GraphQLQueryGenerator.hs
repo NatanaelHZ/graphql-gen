@@ -20,7 +20,7 @@ genField (S.Field n _ (S.TypeObject to)) = genSelection n [] (S.TypeObject to)
 genField (S.Field n _ _) = return (Q.SingleField n) 
 
 isMandatory :: S.Arg -> Bool 
-isMandatory (S.Arg _ b _) = b
+isMandatory (S.Arg _ _ b) = b
 
 getArgName (S.Arg n _ _) = n
 
