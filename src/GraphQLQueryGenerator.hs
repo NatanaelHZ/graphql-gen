@@ -4,32 +4,9 @@ import Data.List
 import Debug.Trace (trace)
 import Test.QuickCheck
 
+import GraphQLQueryData
 import qualified GraphQLSchemaSyntax as S
 import qualified GraphQLQuerySyntax as Q
-
-argsData :: [(String, [(Q.Name, [Q.Value])])]
-argsData = [
-  ("Capsule", [("id", [
-                        Q.ScalarValue (Q.IDValue "5e9e2c5bf35918ed873b2664"),
-                        Q.ScalarValue (Q.IDValue "5e9e2c5bf3591835983b2666"),
-                        Q.ScalarValue (Q.IDValue "5e9e2c5bf3591882af3b2665")
-                      ]
-              )]
-  ),
-  ("Dragon", [("id", [
-                        Q.ScalarValue (Q.IDValue "5e9d058759b1ff74a7ad5f8f"),
-                        Q.ScalarValue (Q.IDValue "5e9d058859b1ffd8e2ad5f90")
-                      ]
-              )]
-  ),
-  ("Rocket", [("id", [
-                        Q.ScalarValue (Q.IDValue "5e9d0d95eda69955f709d1eb"),
-                        Q.ScalarValue (Q.IDValue "5e9d0d95eda69973a809d1ec"),
-                        Q.ScalarValue (Q.IDValue "5e9d0d95eda69974db09d1ed")
-                      ]
-              )]
-  )
-  ]
 
 selectSchemaQuery :: [S.Query] -> Gen S.Query
 selectSchemaQuery queries = elements queries
@@ -38,9 +15,9 @@ getTypeName :: S.Type -> String
 getTypeName (S.TypeObject on) = on
 getTypeName (S.TypeList t) = getTypeName (head t)
 
-genField :: [S.Arg] -> S.Field -> Gen Q.Selection 
-genField args (S.Field n _ (S.TypeObject to)) = genSelection n args (S.TypeObject to)
-genField args (S.Field n _ _) = return (Q.SingleField n) 
+genField :: S.Field -> Gen Q.Selection 
+genField (S.Field n _ (S.TypeObject to)) = genSelection n [] (S.TypeObject to)
+genField (S.Field n _ _) = return (Q.SingleField n) 
 
 isMandatory :: S.Arg -> Bool 
 isMandatory (S.Arg _ b _) = b
@@ -72,9 +49,9 @@ genSelection n args (S.TypeObject on) =
     in case obj of 
          Just (S.Type _ fl) -> 
             do fields <- nub <$> listOf1 (elements fl)
-               selections <- mapM (genField args) fields 
-               args <- genArgs on args
-               return (Q.NestedField n args selections)
+               selections <- mapM genField fields 
+               gargs <- genArgs on args
+               return (Q.NestedField n gargs selections)
          Nothing -> error "Invalid object name"
 
 generateQuery :: S.Query -> Gen Q.Query
