@@ -12,7 +12,7 @@ data TypeDefinition = Scalar String
 data Field = Field String [Arg] Type 
            deriving ({-Show,-} Eq) 
 
-data Arg = Arg String Bool Type 
+data Arg = Arg String Type Bool
          deriving ({-Show,-} Eq)
 
 data DefaultType = PrimInt
@@ -81,12 +81,12 @@ exportQuery (Query s _ t) = s ++ ":" ++ exportType t
 -- Schema Test API GraphQL
 queries :: [Query]
 queries = [
-            (Query "capsule" [Arg "id" True (TypeScalar PrimID)] (TypeObject "Capsule")),
+            (Query "capsule" [Arg "id" (TypeScalar PrimID) True] (TypeObject "Capsule")),
             (Query "capsules" [] (TypeList [(TypeObject "Capsule")])),
             (Query "company" [] (TypeObject "Info")),
-            (Query "dragon" [Arg "id" True (TypeScalar PrimID)] (TypeList [(TypeObject "Dragon")])),
+            (Query "dragon" [Arg "id" (TypeScalar PrimID) True] (TypeList [(TypeObject "Dragon")])),
             (Query "dragons" [] (TypeList [(TypeObject "Dragon")])),
-            (Query "rocket" [Arg "id" True (TypeScalar PrimID)] (TypeList [(TypeObject "Rocket")])),
+            (Query "rocket" [Arg "id" (TypeScalar PrimID) True] (TypeList [(TypeObject "Rocket")])),
             (Query "rockets" [] (TypeList [(TypeObject "Rocket")])),
             (Query "roadster" [] (TypeObject "Roadster")),
             (Query "histories" [] (TypeObject "History"))
@@ -171,8 +171,8 @@ types = [
 {- Examples generic -}
 schema1 = Type "Query" 
             [
-                (Field "artist" [Arg "id" False (TypeScalar PrimID)] (TypeObject "Artist")),
-                (Field "movie" [Arg "id" False (TypeScalar PrimID)] (TypeObject "Movie"))
+                (Field "artist" [Arg "id" (TypeScalar PrimID) False] (TypeObject "Artist")),
+                (Field "movie" [Arg "id" (TypeScalar PrimID) False] (TypeObject "Movie"))
             ]
 
 {- Examples Space-X API -}
@@ -184,11 +184,11 @@ spacexSchema = Type "Query"
 
                     -- capsules(find: CapsulesFind, limit: Int, offset: Int, order: String, sort: String): [Capsule]
                     (Field "capsules" [
-                                Arg "find" False (TypeObject "CapsulesFind"),
-                                Arg "limit" False (TypeScalar PrimInt),
-                                Arg "offset" False (TypeScalar PrimInt),
-                                Arg "order" False (TypeScalar PrimString),
-                                Arg "sort" False (TypeScalar PrimString)
+                                Arg "find" (TypeObject "CapsulesFind") False,
+                                Arg "limit" (TypeScalar PrimInt) False,
+                                Arg "offset" (TypeScalar PrimInt) False,
+                                Arg "order" (TypeScalar PrimString) False,
+                                Arg "sort" (TypeScalar PrimString) False
                             ]
                             -- Return
                             (TypeList [(TypeObject "Capsule")])),
